@@ -1,0 +1,64 @@
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+<script>
+//function login(){
+ /*   window.socket = io.connect("http://" + ($('meta[name=\'node_url\']').attr('content')));
+    window.telephony = io.connect('http://192.168.85.80:8880');
+    if (window.telephony != null) {
+      return window.telephony.on('connect', function() {
+        var agent_id;
+        agent_id = window.pad($('#current_username').data('idnumber'), 11);
+        socket.emit("identificacion", {
+          cedula: agent_id
+        });
+        console.log("connected to telephony as " + agent_id);
+        return window.telephony.on('bridge', function(phone) {
+          console.log(phone);
+          if ($('#client_search_phone').size() > 0) {
+            $('#client_search_phone').autocomplete("search", "" + phone);
+            $('#client_search_phone').val(phone);
+            if ($('.ui-menu-item a').size === 1) {
+              return $('.ui-menu-item a:first').trigger('click');
+            }
+
+          } else {
+
+            return windows.show_alert("Ha entrado una llamada desde " + phone + " y no se encontro el formulario para colocarla", 'alert');
+          }
+
+        });
+      });
+    }
+}
+*/
+
+function login(){
+   // var socket = io.connect('http://192.168.85.80:8880', {reconnect: false });
+    var socket = io.connect('http://localhost:8880', {reconnect: false });
+
+    var agenteId = document.getElementById("agenteId").value;
+
+if (agenteId != ''){
+        socket.on('connect', function(){
+        $('#calls').append('<strong>Conectado - '+agenteId+'</strong><br/>');
+                socket.emit("identificacion",{cedula: agenteId});
+        });
+}
+
+    socket.on('bridge', function(agente){
+    $('#calls').append('<strong>'+agente + "<br/>" +'</strong><br/>'); 
+   }); 
+//testing
+    socket.on('disconnect', function(agenteId){
+        //socket.emit("close",{cedula: agenteId});
+        console.log("me desconecte\r\n");
+   }); 
+}
+</script>
+<h2>Llamadas Conectadas</h2>
+<b>Identificacion:</b>
+<input type="text" id="agenteId"/><br/>
+<input type="button" id="btnConectar" value="Conectar" onclick="login()" />
+
+<div id="calls">
+</div>
